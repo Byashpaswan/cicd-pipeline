@@ -68,6 +68,20 @@ pipeline {
         sh 'docker image prune -f'
       }
     }
+
+    stage('Push to Registry') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'DockerHubCred', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
+          sh '''
+            echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin
+            docker tag $IMAGE_NAME:latest $DOCKERHUB_USER/$IMAGE_NAME:latest
+            docker tag $IMAGE_NAME:$BUILD_NUMBER $DOCKERHUB_USER/$IMAGE_NAME:$BUILD_NUMBER
+            docker push $DOCKERHUB_USER/$IMAGE_NAME:latest
+            docker push $DOCKERHUB_USER/$IMAGE_NAME:$BUILD_NUMBER
+          '''
+        }
+      }
+    }
   }
 
   post {
