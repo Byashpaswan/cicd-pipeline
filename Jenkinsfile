@@ -1,3 +1,4 @@
+@Library('shared-library') _
 pipeline {
   agent any
 
@@ -14,6 +15,15 @@ pipeline {
   }
 
   stages {
+
+    stage('shared-library') {
+      steps {
+         script {
+            hello()
+         }
+      }
+
+    }
 
     stage('Checkout Code') {
       steps {
